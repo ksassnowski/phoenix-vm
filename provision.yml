@@ -67,14 +67,29 @@
         - postgresql-contrib
       tags:
         - database
+
+    - name: Add Nodesource apt key.
+      apt_key:
+        url: https://keyserver.ubuntu.com/pks/lookup?op=get&fingerprint=on&search=0x1655A0AB68576280
+        id: "68576280"
+        state: present
+      tags:
+        - node
+
+    - name: Add NodeSource repositories for Node.js.
+      apt_repository:
+        repo: "{{ item }}"
+        state: present
+      with_items:
+        - "deb https://deb.nodesource.com/node_6.x {{ ansible_distribution_release }} main"
+        - "deb-src https://deb.nodesource.com/node_6.x {{ ansible_distribution_release }} main"
+      tags:
+        - node
   
     - name: Install nodejs and npm
       apt:
-        name: "{{ item }}"
+        name: nodejs=6.*
         state: present
         update_cache: yes
-      with_items:
-        - nodejs
-        - npm
       tags:
         - node
