@@ -1,6 +1,5 @@
 ---
 - hosts: all
-
   become: yes
 
   tasks:
@@ -9,6 +8,11 @@
       tags:
         - locale
 
+
+- hosts: all
+  become: yes
+
+  tasks:
     - name: Install prerequisites
       apt:
         name: "{{ item }}"
