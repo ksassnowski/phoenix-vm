@@ -1,0 +1,80 @@
+---
+- hosts: all
+
+  become: yes
+
+  tasks:
+    - name: Set Locale to en_US.UTF-8
+      command: /usr/sbin/update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+      tags:
+        - locale
+
+    - name: Get Erlang Solutions deb
+      get_url:
+        url: https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
+        dest: /tmp
+      tags:
+        - erlang
+
+    - name: Install erlang solutions
+      apt:
+        deb: /tmp/erlang-solutions_1.0_all.deb
+        state: present
+      tags:
+        - erlang
+
+    - name: Install Erlang
+      apt:
+        name: erlang
+        state: present
+        update_cache: yes
+
+    - name: Install Elixir
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - elixir
+      tags:
+        - elixir
+  
+    - name: Install Hex
+      shell: yes Y | mix local.hex
+      become: yes
+      become_user: vagrant
+      register: vagrant
+      tags:
+        - mix
+        - elixir
+
+    - name: Install phoenix
+      shell: yes Y | mix archive.install https://github.com/phoenixframework/archives/raw/master/phoenix_new.ez
+      become: yes
+      become_user: vagrant
+      register: phoenix
+      tags:
+        - mix
+        - elixir
+
+    - name: Install PostgreSQL
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - postgresql
+        - postgresql-contrib
+      tags:
+        - database
+  
+    - name: Install nodejs and npm
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - nodejs
+        - npm
+      tags:
+        - node
