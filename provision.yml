@@ -9,6 +9,14 @@
       tags:
         - locale
 
+    - name: Install prerequisites
+      apt:
+        name: "{{ item }}"
+        state: present
+        update_cache: yes
+      with_items:
+        - python-psycopg2
+
     - name: Get Erlang Solutions deb
       get_url:
         url: https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb
@@ -65,6 +73,17 @@
       with_items:
         - postgresql
         - postgresql-contrib
+      tags:
+        - database
+
+    - name: Set postgres user default password
+      postgresql_user:
+        name: postgres
+        password: postgres
+        state: present
+      become: yes
+      become_user: postgres
+      no_log: true
       tags:
         - database
 
