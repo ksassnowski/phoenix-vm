@@ -20,6 +20,7 @@
         update_cache: yes
       with_items:
         - python-psycopg2
+        - inotify-tools
 
     - name: Get Erlang Solutions deb
       get_url:
